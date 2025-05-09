@@ -11,7 +11,7 @@ class PageController extends Controller
     }
 
     public function login() {
-        return view('logim');
+        return view('login');
     }
 
     public function app() {

@@ -22,12 +22,8 @@
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
 
-<body class="bg-pattern bg-background min-h-screen flex flex-col gap-20 text-foreground bg-top bg-repeat bg-size-[20%]">
+<body class="bg-background min-h-screen flex flex-col gap-20 text-foreground bg-top bg-repeat bg-size-[20%]">
     @yield('body')
-
-    <footer class="bg-glass backdrop-blur-lg py-48 flex items-center justify-center">
-        <p class="text-secondary">© {{ date("Y") }} Propiedad de QuantumSafe</p>
-    </footer>
 </body>
 
 </html>
