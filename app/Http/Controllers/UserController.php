@@ -16,7 +16,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        //
+        $files = Auth::user()->files;
     }
 
     /**
@@ -119,7 +119,7 @@ class UserController extends Controller
         //
     }
 
-    public function login (Request $request)
+    public function authenticate(Request $request)
     {
         $credentials = $request->validate([
             'email' => ['required', 'email'],
@@ -129,12 +129,16 @@ class UserController extends Controller
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
  
-            return redirect()->intended("files.index");
+            return redirect()->route("file.index");
         }
  
         return back()->withErrors([
             'email' => 'Las credenciales no coinciden.',
         ])->onlyInput('email');
+    }
+
+    public function login(){
+        return view("user.login");
     }
 
     public function logout(Request $request)
@@ -143,8 +147,6 @@ class UserController extends Controller
     
         $request->session()->invalidate();
     
-        $request->session()->regenerateToken();
-    
-        return redirect('/');
+        return redirect()->route("login");
     }
 }

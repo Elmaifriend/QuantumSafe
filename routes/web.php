@@ -5,7 +5,24 @@ use App\Http\Controllers\FileController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PageController;
 
-Route::post('/files', [FileController::class, 'store']);
+Route::middleware(['auth'])->group(function () {
+    
+    Route::post('/files', [FileController::class, 'store'])
+        ->name("file.store");
+
+    Route::get("/logout", [UserController::class, "logout"])
+        ->name("user.logout");
+
+    Route::get("/files", [FileController::class, "index"])
+        ->name("file.index");
+
+    Route::post('/files/upload', [FileController::class, 'upload'])
+        ->name('files.upload');
+
+    Route::get('/files/download/{id}', [FileController::class, 'download'])
+        ->name('files.download');
+
+});
 
 Route::get("/register", [UserController::class, "create"])
     ->name("user.create");
@@ -15,6 +32,16 @@ Route::post("/register", [UserController::class, "store"])
 
 Route::post("/logout", [UserController::class, "logout"])
     ->name("user.logout");
+
+Route::get("/login", [UserController::class, "login"])
+    ->name("login");
+
+Route::post("/login", [UserController::class, "authenticate"])
+    ->name("user.authenticate");
+
+Route::get("/files", [FileController::class, "index"])
+    ->name("file.index");
+
 
 Route::get("/", [PageController::class, "home"])
     ->name("home");
@@ -30,6 +57,3 @@ Route::get("/file-upload", [PageController::class, "filesUpload"])
 
 Route::get("/file-show", [PageController::class, "fileShow"])
     ->name("files-show");
-
-Route::get("/files", [FileController::class, "index"])
-    ->name("file.index");

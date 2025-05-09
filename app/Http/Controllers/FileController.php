@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\file;
+use App\Models\File;
 use Illuminate\Http\Request;
 use ParagonIE\Sodium\Compat;
 use phpseclib3\Crypt\AES;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 
 
 class FileController extends Controller
@@ -14,10 +15,6 @@ class FileController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {
-        return view("files.index");
-    }
 
     /**
      * Show the form for creating a new resource.
@@ -34,39 +31,37 @@ class FileController extends Controller
     {
         $request->validate(['file' => 'required|file']);
 
-        // 1. Generar clave AES aleatoria (shared_secret)
-        $sharedSecret = random_bytes(32); // 256 bits para AES-256
+        $sharedSecret = random_bytes(32);
 
-        // 2. Encriptar el archivo con AES-GCM
         $file = $request->file('file');
         $cipher = new AES('gcm');
         $cipher->setKey($sharedSecret);
-        $iv = random_bytes(16); // Nonce para GCM
+        $iv = random_bytes(16);
         $cipher->setNonce($iv);
         $encryptedContent = $cipher->encrypt(file_get_contents($file->path()));
+        $authTag = $cipher->getTag();
 
-        // 3. Encriptar sharedSecret con X25519 (clave pública del usuario)
         $user = $request->user();
         $encryptedKey = Compat::crypto_box_seal(
             $sharedSecret,
             base64_decode($user->public_key)
         );
 
-        // 4. Guardar archivo encriptado manualmente
         $storedName = uniqid() . '.enc';
-        Storage::put("encrypted/{$storedName}", $encryptedContent); // aquí sí usas el contenido cifrado
+        Storage::put("encrypted/{$storedName}", $encryptedContent);
 
-        // 5. Guardar metadatos en DB
         File::create([
             'user_id' => $user->id,
             'original_name' => $file->getClientOriginalName(),
             'stored_name' => $storedName,
             'encrypted_key' => base64_encode($encryptedKey),
-            'iv' => base64_encode($iv)
+            'iv' => base64_encode($iv),
+            'auth_tag' => base64_encode($authTag),
         ]);
 
         return response()->json(['message' => 'Archivo encriptado y guardado']);
     }
+
 
     /**
      * Display the specified resource.
@@ -112,6 +107,7 @@ class FileController extends Controller
         // 2. Desencriptar la clave simétrica
         $encryptedKey = base64_decode($file->encrypted_key);
         $iv = base64_decode($file->iv);
+        $authTag = base64_decode($file->auth_tag); // NUEVO
 
         //Asegúrate de tener la clave privada del usuario
         $privateKey = base64_decode($user->private_key); // debe estar protegida
@@ -133,6 +129,7 @@ class FileController extends Controller
         $cipher = new AES('gcm');
         $cipher->setKey($sharedSecret);
         $cipher->setNonce($iv);
+        $cipher->setTag($authTag); // NUEVO
         $decryptedContent = $cipher->decrypt($encryptedContent);
 
         if ($decryptedContent === false) {
@@ -143,6 +140,58 @@ class FileController extends Controller
         return response($decryptedContent)
             ->header('Content-Type', 'application/octet-stream')
             ->header('Content-Disposition', 'attachment; filename="' . $file->original_name . '"');
+    }
+
+    public function index()
+    {
+        // Obtener los archivos del usuario autenticado
+        $files = File::where('user_id', Auth::id())->latest()->get();
+
+        return view('files.user-files', compact('files'));
+    }
+
+    public function upload(Request $request)
+    {
+        // Validar el archivo
+        $request->validate([
+            'newFile' => 'required|file|max:10240', // Máx 10MB
+        ]);
+
+        $user = Auth::user();
+
+        // 1. Generar clave AES aleatoria (shared_secret)
+        $sharedSecret = random_bytes(32);
+
+        // 2. Encriptar el archivo con AES-GCM
+        $cipher = new AES('gcm');
+        $cipher->setKey($sharedSecret);
+        $iv = random_bytes(16);
+        $cipher->setNonce($iv);
+        $encryptedContent = $cipher->encrypt(file_get_contents($request->file('newFile')->getRealPath()));
+        $authTag = $cipher->getTag();
+
+        // 3. Encriptar sharedSecret con X25519 (clave pública del usuario)
+        $encryptedKey = Compat::crypto_box_seal(
+            $sharedSecret,
+            base64_decode($user->public_key)
+        );
+
+        // 4. Guardar archivo en el sistema de almacenamiento
+        $storedName = uniqid() . '.enc';
+        Storage::put("encrypted/{$storedName}", $encryptedContent);
+
+        // 5. Guardar la información en la base de datos
+        File::create([
+            'user_id' => $user->id,
+            'original_name' => $request->file('newFile')->getClientOriginalName(),
+            'stored_name' => $storedName,
+            'encrypted_key' => base64_encode($encryptedKey),
+            'iv' => base64_encode($iv),
+            'auth_tag' => base64_encode($authTag),
+        ]);
+
+        // Redirigir con mensaje de éxito
+        return redirect()->route('file.index')->with('message', 'Archivo subido exitosamente.');
     }
 
 }

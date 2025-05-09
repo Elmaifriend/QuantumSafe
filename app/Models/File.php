@@ -5,17 +5,18 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class file extends Model
+class File extends Model
 {
     /** @use HasFactory<\Database\Factories\FileFactory> */
     use HasFactory;
 
     protected $fillable = [
         'user_id',
-        'name',
+        'original_name',
         'stored_name',
         'encrypted_key',
-        'iv'
+        'iv',
+        'auth_tag'
     ];
 
     public function user()
