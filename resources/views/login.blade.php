@@ -13,25 +13,35 @@
     <div class="flex flex-col justify-center w-full max-w-3xl justify-self-center">
         <h2 class="text-display-medium font-bold text-highlight mb-6">Únete Ahora</h2>
 
-        <form class="space-y-6" method="POST" action="{{ route('login') }}">
-            @csrf
+        {{-- Mostrar errores generales --}}
+        @if($errors->any())
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                <ul class="list-disc list-inside text-sm">
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
 
-            <!-- Nombre -->
-            <x-form-input
-                label="Nombre"
-                type="text"
-                id="name"
-                placeholder="Tu nombre completo"
-                :required="true"
-            ></x-form-input>
+        @if(session('status'))
+            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+                {{ session('status') }}
+            </div>
+        @endif
+
+        <form class="space-y-6" method="POST" action="{{ route('user.authenticate') }}">
+            @csrf
 
             <!-- Correo -->
             <x-form-input
                 label="Email"
                 type="email"
                 id="email"
+                name="email"
                 placeholder="tucorreo@ejemplo.com"
                 :required="true"
+                value="{{ old('email') }}"
             ></x-form-input>
 
             <!-- Contraseña -->
@@ -39,12 +49,13 @@
                 label="Contraseña"
                 type="password"
                 id="password"
+                name="password"
                 placeholder="************"
                 :required="true"
             ></x-form-input>
 
             <!-- Botón principal -->
-            <x-button class="w-full text-label-medium justify-center">Entrar</x-button>
+            <x-button type="submit" class="w-full text-label-medium justify-center">Entrar</x-button>
 
             <!-- Separador -->
             <div class="flex items-center justify-center text-foreground-tertiary">
@@ -60,6 +71,5 @@
             </x-button>
         </form>
     </div>
-</div>
 </div>
 @endsection

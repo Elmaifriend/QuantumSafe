@@ -46,14 +46,15 @@ Route::get("/files", [FileController::class, "index"])
 Route::get("/", [PageController::class, "home"])
     ->name("home");
 
-Route::get("/login", [PageController::class, "login"])
-    ->name("login");
-
 Route::get("/app", [PageController::class, "app"])
     ->name("app");
 
 Route::get("/file-upload", [PageController::class, "filesUpload"])
-    ->name("files-upload");
+    ->name("page.upload");
 
-Route::get("/file-show", [PageController::class, "fileShow"])
-    ->name("files-show");
+Route::get('/file/show/{id}', [FileController::class, 'show'])
+    ->name('files.show');
+    
+Route::get('/file/preview/{id}', [FileController::class, 'preview'])
+    ->name('files.preview');
+    
