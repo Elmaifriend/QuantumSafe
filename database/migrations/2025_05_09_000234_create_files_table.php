@@ -13,12 +13,15 @@ return new class extends Migration
     {
         Schema::create('files', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained();
-            $table->text("name");
+            $table->unsignedBigInteger('user_id');
+            $table->string('original_name');
             $table->string('stored_name');
-            $table->text("encrypted_key");
-            $table->text("iv"); 
+            $table->text('encrypted_key');
+            $table->text('iv');
+            $table->text('auth_tag');
             $table->timestamps();
+        
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

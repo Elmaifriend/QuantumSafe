@@ -18,6 +18,10 @@ Route::middleware(['auth'])->group(function () {
 
     Route::post('/files/upload', [FileController::class, 'upload'])
         ->name('files.upload');
+
+    Route::get('/files/download/{id}', [FileController::class, 'download'])
+        ->name('files.download');
+
 });
 
 Route::get("/register", [UserController::class, "create"])

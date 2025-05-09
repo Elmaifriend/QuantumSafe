@@ -7,10 +7,16 @@
                 <div class="p-4 border rounded-lg bg-gray-50">
                     <p class="font-semibold truncate">{{ $file->original_name }}</p>
                     <p class="text-sm text-gray-500 break-all">{{ $file->stored_name }}</p>
+                    <a href="{{ route('files.download', $file->id) }}"
+                    class="text-blue-600 hover:underline text-sm mt-2 inline-block">
+                    Descargar
+                    </a>
                 </div>
             @empty
                 <p class="col-span-full text-gray-500">No tienes archivos aún.</p>
             @endforelse
+
+
         </div>
 
         <!-- Formulario para subir archivo -->

@@ -12,10 +12,11 @@ class File extends Model
 
     protected $fillable = [
         'user_id',
-        'name',
+        'original_name',
         'stored_name',
         'encrypted_key',
-        'iv'
+        'iv',
+        'auth_tag'
     ];
 
     public function user()
