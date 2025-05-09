@@ -67,7 +67,7 @@
         <div class="mt-4 text-center">
             <p class="text-sm text-gray-600">
                 ¿Ya tienes una cuenta? 
-                <a href="{{ route('user.login') }}" class="font-medium text-indigo-600 hover:text-indigo-500">
+                <a href="{{ route('login') }}" class="font-medium text-indigo-600 hover:text-indigo-500">
                     Inicia sesión
                 </a>
             </p>
