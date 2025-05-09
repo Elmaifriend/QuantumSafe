@@ -65,7 +65,7 @@
             </div>
 
             <!-- Botón Google -->
-            <x-button class="bg-tertiary text-label-medium w-full justify-center text-foreground-secondary gap-2 font-bold">
+            <x-button class="bg-tertiary text-label-medium w-full justify-center text-foreground-tertiary hover:bg-secondary gap-2 font-bold">
                 <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" class="w-5 h-5" />
                 Iniciar sesión con Google
             </x-button>

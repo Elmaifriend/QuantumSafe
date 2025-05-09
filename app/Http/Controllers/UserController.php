@@ -83,7 +83,7 @@ class UserController extends Controller
         //dd(session()->all());
 
         // 5. Redireccionar con mensaje de éxito
-        return redirect()->route('file.index')
+        return redirect()->route('app')
             ->with('success', '¡Registro exitoso! Bienvenido/a ' . $user->name);
     }
 

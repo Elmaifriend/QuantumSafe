@@ -10,15 +10,14 @@
                 <span class="text-label-medium">{{ $fileName }}</span>
             </div>
             <div class="flex flex-col gap-1">
-                <h1 class="text-display-medium">{{ $fileName }}</h1>
+                <h1 class="text-headline-medium font-[Red_Hat_Display]">{{ $fileName }}</h1>
                 <x-metadata-view name="Nombre" value="{{ $fileName }}"></x-metadata-view>
                 <x-metadata-view name="Fecha" value="{{ $fileDate }}"></x-metadata-view>
                 <x-metadata-view name="Tamaño" value="{{ $fileSize }}"></x-metadata-view>
             </div>
         </div>
 
-        <div class="w-full h-[600px] bg-background rounded-2xl shadow-xl overflow-hidden">
-             
+        <div class="w-full h-full bg-background rounded-2xl shadow-xl">
                 <iframe 
                     src="{{ route('files.preview', ['id' => $fileId]) }}"
                     class="w-full h-full rounded-2xl border-none"

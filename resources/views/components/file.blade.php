@@ -1,6 +1,8 @@
 @props([
     "file",
-    "icon" => "bx-file"
+    "storedName",
+    "fileId",
+    "icon" => "bx-file",
 ])
 
 <div
@@ -22,10 +24,10 @@
         x-collapse
         class="w-[120px] shadow-lg flex flex-col gap-2 bg-tertiary z-10 py-2 px-4 rounded-xl absolute top-1/3 right-8 translate-x-full"
     >
-        <x-button.text class="text-label-medium text-foreground-tertiary">Información</x-button.text>
-        <x-button.text class="text-label-medium text-foreground-tertiary">Compartir</x-button.text>
-        <x-button.text class="text-label-medium text-foreground-tertiary">Borrar</x-button.text>
+        <x-button.text href="{{ route('files.download', $fileId) }}" class="text-label-medium text-foreground-tertiary">Descargar</x-button.text>
+        <x-button.text href="{{ route('files.show', $fileId) }}" class="text-label-medium text-foreground-tertiary">Compartir</x-button.text>
     </div>
     <i class="bx {{ $icon }} !text-[52px]"></i>
     <span class="text-label-medium w-full text-center">{{ $file }}</span>
+    <span class="text-label-small w-full text-center">{{ $storedName }}</span>
 </div>
