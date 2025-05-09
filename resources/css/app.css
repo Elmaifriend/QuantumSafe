@@ -68,8 +68,9 @@
     --text-label-small--font-weight: regular;
 
     /* Images */
-
-    --background-color-glass: rgba(39, 39, 39, 0.1);
+    --background-image-pattern: url("@images/pattern.png");
+    --background-image-hero: url("@images/home-background.png");
+    --background-color-glass: rgba(255, 255, 255, 0.1);
     --background-image-light-borders: linear-gradient(
         -45deg,
         rgba(203, 194, 204, 0.5) 0%,

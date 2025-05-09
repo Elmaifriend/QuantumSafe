@@ -5,7 +5,6 @@ use App\Http\Controllers\FileController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PageController;
 
-
 Route::post('/files', [FileController::class, 'store']);
 
 Route::get("/register", [UserController::class, "create"])
