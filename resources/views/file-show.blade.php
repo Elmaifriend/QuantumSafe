@@ -14,6 +14,7 @@
                 <x-metadata-view name="Nombre" value="{{ $fileName }}"></x-metadata-view>
                 <x-metadata-view name="Fecha" value="{{ $fileDate }}"></x-metadata-view>
                 <x-metadata-view name="Tamaño" value="{{ $fileSize }}"></x-metadata-view>
+                <x-button.text href="{{ route('files.download', $fileId) }}" class="font-bold self-end text-highlight hover:text-highlight-dark">Descargar</x-button.text>
             </div>
         </div>
 
