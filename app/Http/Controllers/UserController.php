@@ -129,7 +129,7 @@ class UserController extends Controller
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
  
-            return redirect()->route("file.index");
+            return redirect()->route("app");
         }
  
         return back()->withErrors([
@@ -138,7 +138,7 @@ class UserController extends Controller
     }
 
     public function login(){
-        return view("user.login");
+        return view("login");
     }
 
     public function logout(Request $request)

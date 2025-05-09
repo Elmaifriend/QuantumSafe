@@ -64,14 +64,6 @@ class FileController extends Controller
 
 
     /**
-     * Display the specified resource.
-     */
-    public function show(file $file)
-    {
-        //
-    }
-
-    /**
      * Show the form for editing the specified resource.
      */
     public function edit(file $file)
@@ -142,6 +134,76 @@ class FileController extends Controller
             ->header('Content-Disposition', 'attachment; filename="' . $file->original_name . '"');
     }
 
+    public function preview($id)
+    {
+        $user = request()->user();
+
+        // 1. Buscar archivo
+        $file = File::where('id', $id)
+                    ->where('user_id', $user->id)
+                    ->firstOrFail();
+
+        // 2. Desencriptar la clave simétrica
+        $encryptedKey = base64_decode($file->encrypted_key);
+        $iv = base64_decode($file->iv);
+        $authTag = base64_decode($file->auth_tag); // NUEVO
+
+        // Asegúrate de tener la clave privada del usuario
+        $privateKey = base64_decode($user->private_key); // debe estar protegida
+        $publicKey = base64_decode($user->public_key);
+        $keypair = $privateKey . $publicKey;
+
+        $sharedSecret = Compat::crypto_box_seal_open(
+            $encryptedKey,
+            $keypair
+        );
+
+        if (!$sharedSecret) {
+            return response()->json(['error' => 'No se pudo desencriptar la clave'], 403);
+        }
+
+        // 3. Leer y desencriptar el archivo
+        $encryptedContent = Storage::get("encrypted/{$file->stored_name}");
+
+        $cipher = new AES('gcm');
+        $cipher->setKey($sharedSecret);
+        $cipher->setNonce($iv);
+        $cipher->setTag($authTag); // NUEVO
+        $decryptedContent = $cipher->decrypt($encryptedContent);
+
+        if ($decryptedContent === false) {
+            return response()->json(['error' => 'Error al desencriptar el archivo'], 500);
+        }
+
+        // 4. Detectar el tipo MIME del archivo
+        $mime = $this->getMimeByExtension($file->original_name);
+
+        // 5. Retorna el archivo desencriptado como vista previa con el tipo MIME detectado
+        return response($decryptedContent)
+            ->header('Content-Type', $mime)
+            ->header('Content-Disposition', 'inline; filename="' . $file->original_name . '"');
+    }
+
+    // Función para obtener el MIME basado en la extensión del archivo
+    public function getMimeByExtension($filename)
+    {
+        $mimeTypes = [
+            'pdf' => 'application/pdf',
+            'jpg' => 'image/jpeg',
+            'jpeg' => 'image/jpeg',
+            'png' => 'image/png',
+            'gif' => 'image/gif',
+            'txt' => 'text/plain',
+            'html' => 'text/html',
+            'csv' => 'text/csv',
+            // Añade más tipos según sea necesario
+        ];
+
+        $ext = pathinfo($filename, PATHINFO_EXTENSION);
+        return isset($mimeTypes[$ext]) ? $mimeTypes[$ext] : 'application/octet-stream'; // 'application/octet-stream' es el valor por defecto
+    }
+
+
     public function index()
     {
         // Obtener los archivos del usuario autenticado
@@ -191,7 +253,63 @@ class FileController extends Controller
         ]);
 
         // Redirigir con mensaje de éxito
-        return redirect()->route('file.index')->with('message', 'Archivo subido exitosamente.');
+        return redirect()->route('app')->with('message', 'Archivo subido exitosamente.');
     }
 
+    public function show($id)
+    {
+        $file = File::findOrFail($id);
+
+        $filePath = "encrypted/{$file->stored_name}";
+
+        if (!Storage::exists($filePath)) {
+            abort(404);
+        }
+
+        $fileName = $file->original_name;
+        $fileSize = Storage::size($filePath); // En bytes
+        $fileMime = Storage::mimeType($filePath);
+        $fileDate = $file->created_at;
+
+        $fileUrl = route('files.preview', ['id' => $file->id]);
+
+        return view('file-show', [
+            "fileId" => $file->id,
+            'fileName' => $fileName,
+            'fileSize' => $this->humanFileSize($fileSize),
+            'fileDate' => $fileDate->format('d/m/Y H:i'),
+            'fileUrl'  => $fileUrl,
+        ]);
+    }
+
+    public function previewRaw($id)
+    {
+        $file = File::findOrFail($id);
+        $path = storage_path('app/encrypted/' . $file->stored_name);
+
+        if (!file_exists($path)) {
+            abort(404);
+        }
+
+        $mime = mime_content_type($path);
+        $allowed = ['application/pdf', 'image/jpeg', 'image/png'];
+
+        if (!in_array($mime, $allowed)) {
+            return response("Tipo de archivo no compatible para vista previa.", 415);
+        }
+
+        return response()->file($path, [
+            'Content-Type' => $mime,
+            'Content-Disposition' => 'inline; filename="' . $file->original_name . '"',
+        ]);
+    }
+
+
+
+    private function humanFileSize($bytes, $decimals = 2)
+    {
+        $size = ['B', 'KB', 'MB', 'GB', 'TB'];
+        $factor = floor((strlen($bytes) - 1) / 3);
+        return sprintf("%.{$decimals}f", $bytes / pow(1024, $factor)) . ' ' . $size[$factor];
+    }
 }
