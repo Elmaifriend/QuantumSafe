@@ -34,7 +34,7 @@
         </label>
         <textarea
             {{ $attributes->merge([
-                'class' => 'w-full bg-background-light text-foreground-tertiary rounded-2xl px-6 py-4 text-lg focus:outline-none focus:ring-2 focus:ring-highlight min-h-[120px] resize-none',
+                'class' => 'border border-secondary w-full bg-background-light text-foreground-tertiary rounded-2xl px-6 py-4 text-lg focus:outline-none focus:ring-2 focus:ring-highlight min-h-[120px] resize-none',
                 'name' => $name,
                 'id' => $id,
                 'placeholder' => $placeholder,
@@ -49,7 +49,7 @@
         </label>
         <input
             {{ $attributes->merge([
-                'class' => 'w-full bg-background-light text-foreground-tertiary rounded-2xl px-6 py-4 text-lg focus:outline-none focus:ring-2 focus:ring-highlight',
+                'class' => 'border border-secondary w-full bg-background-light text-foreground-tertiary rounded-2xl px-6 py-4 text-lg focus:outline-none focus:ring-2 focus:ring-highlight',
                 'type' => $type,
                 'name' => $name,
                 'id' => $id,

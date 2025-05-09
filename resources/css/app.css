@@ -69,6 +69,7 @@
 
     /* Images */
     --background-image-pattern: url("@images/pattern.png");
+    --background-image-login-banner: url("@images/login-banner.jpg");
     --background-image-hero: url("@images/home-background.png");
     --background-color-glass: rgba(255, 255, 255, 0.1);
     --background-image-light-borders: linear-gradient(
