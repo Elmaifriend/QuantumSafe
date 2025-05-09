@@ -32,23 +32,23 @@
         <!-- Panel derecho -->
         <div class="w-full h-full bg-white rounded-2xl border border-tertiary overflow-y-auto">
             <!-- Área de subida -->
-            <div class="w-fullpy-6">
+            <div class="w-full py-6">
                 <form action="{{ route('files.upload') }}" method="POST" enctype="multipart/form-data" class="flex flex-col gap-2">
                     @csrf
-                    <div class="w-full p-6 rounded-lg text-center cursor-pointer transition">
+                    <div class="flex flex-col gap-2 w-full p-6 rounded-lg text-center cursor-pointer transition">
                         <x-form-input
                              label="Arrastra tus archivos aqui"
                              id="newFile"
                              type="file"
                              :required="true"
                         ></x-form-input>
+                        <div class="self-end">
+                            <x-button type="submit" class="text-label-medium">
+                                Subir archivo
+                            </x-button>
+                        </div>
                     </div>
 
-                    <div class="self-end">
-                        <x-button type="submit" class="text-label-medium">
-                            Subir archivo
-                        </x-button>
-                    </div>
                 </form>
             </div>
 
