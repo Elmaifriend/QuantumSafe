@@ -1,77 +1,83 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro de Usuario</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-100 min-h-screen flex items-center justify-center">
-    <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-        <h1 class="text-2xl font-bold text-center mb-6 text-gray-800">Registro de Usuario</h1>
-        
-        <form method="POST" action="{{ route('user.store') }}" class="space-y-4">
+@extends('layouts.panel')
+
+@section('title', 'QuantumSafe')
+
+@section('body')
+<div class="grid grid-cols-2 gap-8 p-2 min-h-screen bg-background text-foreground">
+<!-- Formulario de registro -->
+    <div class="flex flex-col justify-center w-full max-w-3xl justify-self-center">
+        <h2 class="text-display-medium font-bold text-highlight mb-6">Crea tu cuenta</h2>
+
+        {{-- Mostrar errores --}}
+        @if($errors->any())
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                <ul class="list-disc list-inside text-sm">
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+        <form method="POST" action="{{ route('user.store') }}" class="space-y-6">
             @csrf
 
             <!-- Nombre -->
-            <div>
-                <label for="name" class="block text-sm font-medium text-gray-700">Nombre</label>
-                <input type="text" id="name" name="name" required
-                       class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                       value="{{ old('name') }}"
-                       autocomplete="name" autofocus>
-                @error('name')
-                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                @enderror
-            </div>
+            <x-form-input
+                label="Nombre"
+                type="text"
+                id="name"
+                name="name"
+                placeholder="Tu nombre completo"
+                :required="true"
+                value="{{ old('name') }}"
+            ></x-form-input>
 
-            <!-- Email -->
-            <div>
-                <label for="email" class="block text-sm font-medium text-gray-700">Correo Electrónico</label>
-                <input type="email" id="email" name="email" required
-                       class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                       value="{{ old('email') }}"
-                       autocomplete="email">
-                @error('email')
-                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                @enderror
-            </div>
+            <!-- Correo -->
+            <x-form-input
+                label="Correo Electrónico"
+                type="email"
+                id="email"
+                name="email"
+                placeholder="tucorreo@ejemplo.com"
+                :required="true"
+                value="{{ old('email') }}"
+            ></x-form-input>
 
             <!-- Contraseña -->
-            <div>
-                <label for="password" class="block text-sm font-medium text-gray-700">Contraseña</label>
-                <input type="password" id="password" name="password" required
-                       class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                       autocomplete="new-password">
-                @error('password')
-                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                @enderror
-            </div>
+            <x-form-input
+                label="Contraseña"
+                type="password"
+                id="password"
+                name="password"
+                placeholder="************"
+                :required="true"
+            ></x-form-input>
 
-            <!-- Confirmar Contraseña -->
-            <div>
-                <label for="password_confirmation" class="block text-sm font-medium text-gray-700">Confirmar Contraseña</label>
-                <input type="password" id="password_confirmation" name="password_confirmation" required
-                       class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                       autocomplete="new-password">
-            </div>
+            <!-- Confirmar contraseña -->
+            <x-form-input
+                label="Confirmar Contraseña"
+                type="password"
+                id="password_confirmation"
+                name="password_confirmation"
+                placeholder="************"
+                :required="true"
+            ></x-form-input>
 
-            <div>
-                <button type="submit" 
-                        class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                    Registrarse
-                </button>
-            </div>
+            <!-- Botón -->
+            <x-button type="submit" class="w-full text-label-medium justify-center">Registrarse</x-button>
         </form>
 
-        <div class="mt-4 text-center">
-            <p class="text-sm text-gray-600">
-                ¿Ya tienes una cuenta? 
-                <a href="{{ route('login') }}" class="font-medium text-indigo-600 hover:text-indigo-500">
-                    Inicia sesión
-                </a>
+        <div class="mt-6 text-center">
+            <p class="text-label-medium text-foreground-tertiary">
+                ¿Ya tienes una cuenta?
+                <a href="{{ route('login') }}" class="text-highlight font-medium hover:underline">Inicia sesión</a>
             </p>
         </div>
     </div>
-</body>
-</html>
+    <!-- Imagen lateral -->
+    <div class="relative bg-login-banner bg-cover bg-center rounded-2xl">
+        <h1 class="absolute text-foreground-light text-headline-large bottom-1/4 text-shadow-2xl left-1/2 -translate-x-1/2">QuantumSafe</h1>
+    </div>
+</div>
+@endsection
