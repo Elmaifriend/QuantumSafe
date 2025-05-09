@@ -136,4 +136,15 @@ class UserController extends Controller
             'email' => 'Las credenciales no coinciden.',
         ])->onlyInput('email');
     }
+
+    public function logout(Request $request)
+    {
+        Auth::logout();
+    
+        $request->session()->invalidate();
+    
+        $request->session()->regenerateToken();
+    
+        return redirect('/');
+    }
 }
