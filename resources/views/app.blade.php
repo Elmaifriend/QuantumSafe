@@ -26,6 +26,10 @@
                     </div>
                     <p class="text-label-small">13.2 GB de 16 GB usados</p>
                 </div>
+                <x-button.text class="text-label-medium text-foreground-tertiary">
+                    <span>Salir</span>
+                    <i class="bx bx-exit"></i>
+                </x-button.text>
             </div>
         </div>
 
