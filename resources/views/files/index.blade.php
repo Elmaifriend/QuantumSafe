@@ -1,6 +1,6 @@
 @extends('layout.app')
 
-@section('title', 'Your Files')
+@section('title', 'Tus Archivos')
 
 @section('content')
     @if(session('success'))
@@ -9,9 +9,10 @@
         </div>
     @endif
 
-    @livewire('user-files')
+    <form action="{{ route('upload') }}" method="POST" enctype="multipart/form-data">
+        @csrf
+        <input type="file" name="file" required>
+        <button type="submit">Subir archivo</button>
+    </form>
+    
 @endsection
-
-
-
-

@@ -1,18 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <title>App - @yield('title')</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     @livewireStyles
-    <title>App Name - @yield('title')</title>
 </head>
 <body>
+    @yield('content')
 
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     @livewireScripts
-    @yield('content')
-
 </body>
 </html>

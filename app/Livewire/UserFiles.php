@@ -18,7 +18,7 @@ class UserFiles extends Component
     public $newFile;
 
     protected $rules = [
-        'newFile' => 'required|file|max:10240', // Máx 10MB
+        'newFile' => 'required|file|max:10240', // 10MB
     ];
 
     public function mount()
@@ -31,33 +31,33 @@ class UserFiles extends Component
         $this->files = File::where('user_id', Auth::id())->latest()->get();
     }
 
-    public function uploadFile()
+    /* public function uploadFile()
     {
         $this->validate();
 
         $user = Auth::user();
 
-        // 1. Generar clave AES aleatoria (shared_secret)
+        // Paso 1: generar clave AES
         $sharedSecret = random_bytes(32);
 
-        // 2. Encriptar el archivo con AES-GCM
+        // Paso 2: encriptar el contenido
         $cipher = new AES('gcm');
         $cipher->setKey($sharedSecret);
         $iv = random_bytes(16);
         $cipher->setNonce($iv);
         $encryptedContent = $cipher->encrypt(file_get_contents($this->newFile->getRealPath()));
 
-        // 3. Encriptar sharedSecret con X25519 (clave pública del usuario)
+        // Paso 3: encriptar clave con clave pública del usuario
         $encryptedKey = Compat::crypto_box_seal(
             $sharedSecret,
             base64_decode($user->public_key)
         );
 
-        // 4. Guardar archivo
+        // Paso 4: guardar archivo en disco local
         $storedName = uniqid() . '.enc';
         Storage::put("encrypted/{$storedName}", $encryptedContent);
 
-        // 5. Guardar en base de datos
+        // Paso 5: guardar en base de datos
         File::create([
             'user_id' => $user->id,
             'original_name' => $this->newFile->getClientOriginalName(),
@@ -66,11 +66,36 @@ class UserFiles extends Component
             'iv' => base64_encode($iv)
         ]);
 
-        $this->newFile = null;
+        $this->reset('newFile');
         $this->loadFiles();
 
         session()->flash('message', 'Archivo subido exitosamente.');
-    }
+    } */
+
+    public function uploadFile()
+{
+    // Validar el archivo
+    $this->validate();
+
+    // Guardar el archivo en el disco (configurado en config/filesystems.php)
+    $path = $this->newFile->store('files');  // El archivo se guarda en el directorio 'files'
+
+    // Puedes guardar en la base de datos la información relacionada con el archivo (si es necesario)
+    File::create([
+        'user_id' => Auth::id(),
+        'original_name' => $this->newFile->getClientOriginalName(),
+        'stored_name' => $path,
+    ]);
+
+    // Resetear la propiedad de archivo
+    $this->reset('newFile');
+
+    // Cargar los archivos para mostrar en la interfaz
+    $this->loadFiles();
+
+    // Mostrar mensaje de éxito
+    session()->flash('message', 'Archivo subido exitosamente.');
+}
 
     public function render()
     {

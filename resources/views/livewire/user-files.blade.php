@@ -31,22 +31,29 @@
             class="border-4 border-dashed rounded-xl h-40 flex items-center justify-center relative mb-4"
             :class="dragOver ? 'border-blue-500 bg-blue-50' : 'border-gray-300'">
 
-            <label class="cursor-pointer absolute inset-0 flex items-center justify-center text-gray-400 hover:text-blue-600"
-                   @click="triggerInput">
+            <!-- Formulario para arrastrar y soltar o hacer clic para seleccionar -->
+            <label class="cursor-pointer absolute inset-0 flex items-center justify-center text-gray-400 hover:text-blue-600">
                 <span>Arrastra un archivo aquí o haz clic para subir</span>
-                <input type="file" class="hidden" wire:model="newFile" x-ref="fileInput" />
+                <input 
+                    type="file" 
+                    class="hidden" 
+                    wire:change="uploadFile" 
+                    x-ref="fileInput" />
             </label>
         </form>
 
+        <!-- Mostrar errores de validación -->
         @error('newFile') 
             <div class="text-red-500 mb-2 text-sm">{{ $message }}</div> 
         @enderror
 
+        <!-- Botón para enviar el archivo -->
         <button wire:click="uploadFile"
             class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
             Subir Archivo
         </button>
 
+        <!-- Mensaje de éxito al subir el archivo -->
         @if (session()->has('message'))
             <div class="mt-4 text-green-600">
                 {{ session('message') }}
